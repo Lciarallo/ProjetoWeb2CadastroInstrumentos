@@ -90,23 +90,6 @@
                 })
         }
 
-        function clicarbotaoeditar(id, nome, codigo, frequencia_calibracao_dias,ultima_calibracao ) {
-
-            const instrumento = {
-                nome: inputNome.value,
-                codigo: inputcodigo.value,
-                ultima_calibracao: inputultimacalibracao.value,
-                frequencia_calibracao_dias: inputcalibracaodias.value
-            }
-            axios.post('http://localhost:3000/instrumentos/editar', { id, nome, codigo, ultima_calibracao, frequencia_calibracao_dias })
-                .then(() => {
-                    listarItens()
-                })
-                .catch((erro) => {
-                    console.log(erro)
-                })
-
-        }
 
 
         function listagemItens() {
@@ -135,7 +118,7 @@
                             clicarbotaoexcluir(instrumento.id)
                         })
                         colunabotaoeditar.addEventListener('click', () => {
-                            clicarbotaoeditar(instrumento.id,inputNome, inputcodigo, inputultimacalibracao, inputcalibracaodias)
+                            clicarbotaoeditar(instrumento.id)
                         })
 
                         colunaultimacalibracao.textContent = instrumento.ultima_calibracao
@@ -186,6 +169,7 @@
 
 
 
+
         function clicarbotaosalvar() {
             const instrumento = {
                 nome: inputNome.value,
@@ -194,6 +178,7 @@
                 frequencia_calibracao_dias: inputcalibracaodias.value
             }
             console.log(instrumento)
+
             axios
                 .post('http://localhost:3000/instrumentos/adicionar', instrumento)
                 .then((respostasucesso) => {
@@ -205,6 +190,25 @@
                     console.log(error)
                 })
         }
+
+        function clicarbotaoeditar(id) {
+            const instrumento = {
+                nome: inputNome.value,
+                codigo: inputcodigo.value,
+                ultima_calibracao: inputultimacalibracao.value,
+                frequencia_calibracao_dias: inputcalibracaodias.value
+            }
+            axios.post('http://localhost:3000/instrumentos/editar', { id, ...instrumento})
+                .then(() => {
+                    listarItens()
+                })
+                .catch((erro) => {
+                    console.log(erro)
+                    listarItens()
+                })
+
+        }
+
 
 
 

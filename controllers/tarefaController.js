@@ -21,24 +21,20 @@ module.exports = new class TarefaController {
         return res.status(200).json(await Instrumentos.destroy({ where: { id } }))
     }
     editarInstrumentosPost = async (req, res) => {
-        const id = req.body.id;
-        const { nome, codigo, ultima_calibracao, frequencia_calibracao_dias } = req.body;
-      
-        try {
-          const instrumento = await Instrumentos.findOne({ where: { id } });
+      const id = req.body.id;
+      const { nome, codigo, ultima_calibracao, frequencia_calibracao_dias } = req.body;
     
-          await instrumento.update({
-            nome,
-            codigo,
-            ultima_calibracao,
-            frequencia_calibracao_dias,
-          });
-      
-          return res.status(200).json({ mensagem: 'Instrumento atualizado com sucesso' });
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json({ mensagem: 'Erro ao atualizar instrumento' });
+      try {
+        const instrumento = await Instrumentos.findByPk(id);
+        if (!instrumento) {
+          return res.status(404).json({ error: 'Instrumento não encontrado.' });
         }
-      };
-      
+        await instrumento.update({ nome, codigo, ultima_calibracao, frequencia_calibracao_dias });
+        return res.status(200).json({ message: 'Instrumento atualizado com sucesso.' });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Ocorreu um erro ao atualizar o instrumento.' });
+      }
+    };
+    
 }
