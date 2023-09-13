@@ -119,6 +119,8 @@
                         })
                         colunabotaoeditar.addEventListener('click', () => {
                             clicarbotaoeditar(instrumento.id)
+                            location.reload();
+                            
                         })
 
                         colunaultimacalibracao.textContent = instrumento.ultima_calibracao
@@ -204,7 +206,7 @@
                 })
                 .catch((erro) => {
                     console.log(erro)
-                    listarItens()
+                    
                 })
 
         }
