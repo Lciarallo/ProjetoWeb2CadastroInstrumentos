@@ -1,0 +1,11 @@
+- Inicializar a aplicação
+- Instalar os modulos
+    npm install express express-handlebars mysql2 sequelize nodemon
+- Criar a estrutura de pastas
+    controllers,db,models,public(css),routes,views(layouts)
+- Arquivo de conexao com bd.
+- Criar os models
+- Criar o arquivo index.js
+- Criar a controller
+- Criar o front (views)
+- criar as rotas

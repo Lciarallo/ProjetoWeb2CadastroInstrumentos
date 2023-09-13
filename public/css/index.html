@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            background-color: bisque;
+        }
+
+        th {
+            background-color: cadetblue;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cadastro de instrumentos</h1>
+
+    <form id="form">
+        Nome <br>
+        <input id="inputnome" placeholder="Insira o nome"><br>
+        Codigo <br>
+        <input id="inputcodigo" placeholder="Insira o codigo do instrumento"><br>
+        Última Calibração <br>
+        <input id="inputultimacalibracao" type="date" placeholder="Insira a ultima calibração"><br>
+        Frequencia de calibração em dias <br>
+        <input id="inputcalibracaodias" type="number" min="1" placeholder="Insira o numero de dias"><br>
+        <br>
+        <button type="submit" id="botao-salvar">Salvar</button>
+    </form>
+
+    <hr />
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="5">
+                    listagem de instrumentos
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    nome
+                </th>
+                <th>
+                    codigo
+                </th>
+                <th>
+                    ultima calibracao
+                </th>
+                <th>
+                    freq dias
+                </th>
+                <th> proxima calibracao</th>
+                <th>
+                    Opções
+                </th>
+            </tr>
+        </thead>
+
+        <tbody id="corpotabela">
+        </tbody>
+    </table>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        function somaDiasData(instrumento) {
+            data = new Date(instrumento.ultima_calibracao)
+            const numero = data.getTime()
+            const numeroSoma = (instrumento.frequencia_calibracao_dias * 86400000) + 86400000
+            resultado = new Date(numeroSoma + numero)
+
+            return resultado;
+
+        }
+
+        function clicarbotaoexcluir(id) {
+            axios.post('http://localhost:3000/instrumentos/excluir', { id })
+                .then(() => {
+                    listagemItens()
+                })
+                .catch((erro) => {
+                    console.log(erro)
+                })
+        }
+
+        function clicarbotaoeditar(id, nome, codigo, frequencia_calibracao_dias,ultima_calibracao ) {
+
+            const instrumento = {
+                nome: inputNome.value,
+                codigo: inputcodigo.value,
+                ultima_calibracao: inputultimacalibracao.value,
+                frequencia_calibracao_dias: inputcalibracaodias.value
+            }
+            axios.post('http://localhost:3000/instrumentos/editar', { id, nome, codigo, ultima_calibracao, frequencia_calibracao_dias })
+                .then(() => {
+                    listarItens()
+                })
+                .catch((erro) => {
+                    console.log(erro)
+                })
+
+        }
+
+
+        function listagemItens() {
+            axios
+                .get('http://localhost:3000/instrumentos/consultar')
+                .then((respostasucesso) => {
+                    const listageminstrumentos = respostasucesso.data
+                    const corpotabela = document.getElementById('corpotabela')
+                    apagarListagem(corpotabela)
+                    listageminstrumentos.forEach(instrumento => {
+                        const linhatabela = document.createElement('tr')
+                        const colunanome = document.createElement('td')
+                        const colunacodigo = document.createElement('td')
+                        const colunaultimacalibracao = document.createElement('td')
+                        const colunafreqdias = document.createElement('td')
+                        const colunaproximacalibracao = document.createElement('td')
+                        const colunabotaoexcluir = document.createElement('button')
+                        const colunabotaoeditar = document.createElement('button')
+
+                        colunanome.textContent = instrumento.nome
+                        colunacodigo.textContent = instrumento.codigo
+                        colunabotaoeditar.textContent = "Editar"
+                        colunabotaoexcluir.textContent = "Excluir"
+
+                        colunabotaoexcluir.addEventListener('click', () => {
+                            clicarbotaoexcluir(instrumento.id)
+                        })
+                        colunabotaoeditar.addEventListener('click', () => {
+                            clicarbotaoeditar(instrumento.id,inputNome, inputcodigo, inputultimacalibracao, inputcalibracaodias)
+                        })
+
+                        colunaultimacalibracao.textContent = instrumento.ultima_calibracao
+                        colunafreqdias.textContent = instrumento.frequencia_calibracao_dias
+                        colunaproximacalibracao.textContent = somaDiasData(instrumento)
+                        linhatabela.appendChild(colunanome)
+                        linhatabela.appendChild(colunacodigo)
+                        linhatabela.appendChild(colunaultimacalibracao)
+                        linhatabela.appendChild(colunafreqdias)
+                        linhatabela.appendChild(colunaproximacalibracao)
+                        linhatabela.appendChild(colunabotaoexcluir)
+                        linhatabela.appendChild(colunabotaoeditar)
+                        corpotabela.appendChild(linhatabela)
+                    });
+
+                    function apagarListagem(corpotabela) {
+                        while (corpotabela.firstChild) {
+                            corpotabela.removeChild(corpotabela.firstChild);
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+
+        window.onload = () => {
+            listagemItens()
+        }
+
+        const formulario = document.getElementById('form')
+
+        formulario.addEventListener("submit", (event) => {
+            // console.log('evitei a pagina web ser recarregada')
+            event.preventDefault()
+
+        });
+
+        const inputNome = document.getElementById('inputnome')
+        const inputcodigo = document.getElementById('inputcodigo')
+        const inputultimacalibracao = document.getElementById('inputultimacalibracao')
+        const inputcalibracaodias = document.getElementById('inputcalibracaodias')
+        const botaosalvar = document.getElementById('botao-salvar')
+
+        botaosalvar.addEventListener('click', clicarbotaosalvar)
+
+
+
+
+        function clicarbotaosalvar() {
+            const instrumento = {
+                nome: inputNome.value,
+                codigo: inputcodigo.value,
+                ultima_calibracao: inputultimacalibracao.value,
+                frequencia_calibracao_dias: inputcalibracaodias.value
+            }
+            console.log(instrumento)
+            axios
+                .post('http://localhost:3000/instrumentos/adicionar', instrumento)
+                .then((respostasucesso) => {
+                    console.log(respostasucesso)
+                    listagemItens()
+
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
